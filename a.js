@@ -35,21 +35,10 @@ $.ajax
 const loginData = require('./loginData');
 const myUsername =  loginData.username;
 const myPassword =  loginData.password;
+const myApiToken =  loginData.apiToken;
+
 const myUrl =       'https://www.toggl.com/api/v8/me';
-let input = myUsername + ':' + myPassword;
 
+var TogglClient = require('toggl-api');
+var toggl = new TogglClient({apiToken: myApiToken});
 
-
-const http = require('http');
-const https = require('https');
-const request = https.request;
-request(
-    myUrl,
-    {json: true, body: input},
-    function (err, res, body) {
-        console.log('err:\n',err);
-        console.log('res:\n',res);
-        console.log('body:\n',body);
-        
-    }
-)
