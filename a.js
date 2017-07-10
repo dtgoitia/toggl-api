@@ -1,64 +1,7 @@
 /**
  * Toggl API authentication
  * curl -v -u username:password -X GET https://www.toggl.com/api/v8/me
- * 
- * You need to do this in JS
  */
-
-
-const domino = require('domino');
-const window = domino.createWindow('<html></html>');
-const document = window.document;
-
-const $ = require('jquery')(window);
-const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-$.support.cors = true;
-$.ajaxSettings.xhr = function () {
-    return new XMLHttpRequest();
-};
-/*
-$.ajax
-  ({
-    type: "GET",
-    url: "https://www.toggl.com/api/v8/me",
-    data: {username: myUsername, password: myPassword},
-    contentType: "application/json; charset=utf-8",
-    crossDomain: true,
-    success: function (data){
-        console.log(' >>> Wii!!\n',data);
-    },
-    error: function (err) {
-        console.log('Nope... Try again! :P\n',err);
-    }
-});
-*/
-const loginData = require('./loginData');
-const myUsername = loginData.username;
-const myPassword = loginData.password;
-const myApiToken = loginData.apiToken;
-const myWorkspace = loginData.workspaceId;
-const myHeaders = {
-    'username': myUsername,
-    'password': myPassword
-}
-
-const myUrl = 'https://www.toggl.com/api/v8/me';
-//const myUrl = 'http://example.com/object/details?version=1.1';
-
-const TogglClient = require('toggl-api');
-const toggl = new TogglClient({apiToken: myApiToken});
-
-toggl.detailedReport({
-    user_agent: myUsername,
-    workspace_id: myWorkspace,
-}, function(err, timeEntry) {
-    let summary = timeEntry.data.map((x) => {
-        return x.description
-    });
-    console.log('summary:\n',summary);
-    
-});
-
 /**
  toggl.detailedReport.data format:
  { id: 637416109,
@@ -82,3 +25,36 @@ toggl.detailedReport({
   cur: null,
   tags: [] }
  */
+
+const loginData = require('./loginData');
+const myUsername = loginData.username;
+const myPassword = loginData.password;
+const myApiToken = loginData.apiToken;
+const myWorkspace = loginData.workspaceId;
+const startDate = '2017-07-09'
+const endDate = '2017-07-09'
+
+const TogglClient = require('toggl-api');
+const toggl = new TogglClient({apiToken: myApiToken});
+
+// Get detailed report data
+toggl.detailedReport({
+    user_agent: myUsername,
+    workspace_id: myWorkspace,
+    since: startDate,
+    until: endDate,
+}, function(err, timeEntry) {
+    let summary = timeEntry.data.map((task) => {
+        return {
+            project: task.project,
+            description: task.description,
+            duration: new Date(task.dur)/3600000,   // duration in hours
+            start: task.start,
+            end: task.end
+        }
+    });
+    console.log('summary:\n',summary);    
+});
+
+// 0:34:19
+// 2059000
