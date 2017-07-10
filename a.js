@@ -5,7 +5,7 @@
  * You need to do this in JS
  */
 
-/*
+
 const domino = require('domino');
 const window = domino.createWindow('<html></html>');
 const document = window.document;
@@ -13,10 +13,10 @@ const document = window.document;
 const $ = require('jquery')(window);
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 $.support.cors = true;
-$.ajaxSettings.xhr = function() {
+$.ajaxSettings.xhr = function () {
     return new XMLHttpRequest();
 };
-
+/*
 $.ajax
   ({
     type: "GET",
@@ -33,12 +33,52 @@ $.ajax
 });
 */
 const loginData = require('./loginData');
-const myUsername =  loginData.username;
-const myPassword =  loginData.password;
-const myApiToken =  loginData.apiToken;
+const myUsername = loginData.username;
+const myPassword = loginData.password;
+const myApiToken = loginData.apiToken;
+const myWorkspace = loginData.workspaceId;
+const myHeaders = {
+    'username': myUsername,
+    'password': myPassword
+}
 
-const myUrl =       'https://www.toggl.com/api/v8/me';
+const myUrl = 'https://www.toggl.com/api/v8/me';
+//const myUrl = 'http://example.com/object/details?version=1.1';
 
-var TogglClient = require('toggl-api');
-var toggl = new TogglClient({apiToken: myApiToken});
+const TogglClient = require('toggl-api');
+const toggl = new TogglClient({apiToken: myApiToken});
 
+toggl.detailedReport({
+    user_agent: myUsername,
+    workspace_id: myWorkspace,
+}, function(err, timeEntry) {
+    let summary = timeEntry.data.map((x) => {
+        return x.description
+    });
+    console.log('summary:\n',summary);
+    
+});
+
+/**
+ toggl.detailedReport.data format:
+ { id: 637416109,
+  pid: null,
+  tid: null,
+  uid: 2626092,
+  description: 'Some cool work',
+  start: '2017-07-10T15:52:19+01:00',
+  end: '2017-07-10T15:52:57+01:00',
+  updated: '2017-07-10T15:52:57+01:00',
+  dur: 38748,
+  user: 'David',
+  use_stop: true,
+  client: null,
+  project: null,
+  project_color: '0',
+  project_hex_color: null,
+  task: null,
+  billable: null,
+  is_billable: false,
+  cur: null,
+  tags: [] }
+ */

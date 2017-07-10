@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "toggl-api": "^1.0.1"
+    "domino": "^1.0.28",
+    "jquery": "^3.2.1",
+    "toggl-api": "^1.0.1",
+    "xmlhttprequest": "^1.8.0"
   }
 }
